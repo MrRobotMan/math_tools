@@ -97,7 +97,7 @@ def circle(radius: float) -> Section:
     return Section(
         centroid=((radius, radius), (radius, radius)),
         area=pi * radius**2,
-        moment_of_inertia=(pi * (radius**4) / 4, pi * (radius**4) / 4),
+        moment_of_inertia=(pi * (radius**4) / 64, pi * (radius**4) / 64),
     )
 
 
