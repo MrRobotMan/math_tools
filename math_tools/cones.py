@@ -9,11 +9,26 @@ def distance(
     cone_large_end_diameter: float,
     cone_half_angle: float,
 ) -> float:
-    """Find the shortest path between two points on a cone
+    """
+    Find the shortest path between two points on a cone
 
-    example:
-        >>> distance(60, 15, 20, 7, 127, 30)
-        46.503239630149544
+    Parameters
+    ----------
+    height_point_1 : float,
+    angle_point_1 : float,
+    height_point_2 : float,
+    angle_point_2 : float,
+    cone_large_end_diameter : float,
+    cone_half_angle : float,
+
+    Returns
+    -------
+    floast
+
+    Examples
+    --------
+    >>> distance(60, 15, 20, 7, 127, 30)
+    46.503239630149544
     """
     # Convert all angles to radians
     cone_half_angle = math.radians(cone_half_angle)
@@ -41,36 +56,66 @@ def distance(
 
 
 def angle(dia_lg_end: float, dia_sm_end: float, length: float) -> float:
-    """Calculate the cone half-angle
+    """
+    Calculate the cone half-angle
 
-    example:
-        >>> angle(30, 20, 8.66)
-        30.000727780827372
+    Parameters
+    ----------
+    dia_lg_end : float
+    dia_sm_end : float
+    length : float
+
+    Returns
+    -------
+    float
+
+    Examples
+    --------
+    >>> angle(30, 20, 8.66)
+    30.000727780827372
     """
     delta = (dia_lg_end - dia_sm_end) / 2
     return math.degrees(math.atan(delta / length))
 
 
-def radius_at_location(
-    dia_lg_end: float, apex_angle: float, location_from_lg_end: float
-) -> float:
-    """Calculate the radius at a location on a cone.
-
-    example:
-        >>> radius_at_location(174, 60, 58)
-        53.51368438700171
+def radius_at_location(dia_lg_end: float, apex_angle: float, location_from_lg_end: float) -> float:
     """
-    return dia_lg_end / 2 - (
-        math.tan(math.radians(apex_angle / 2)) * location_from_lg_end
-    )
+    Calculate the radius at a location on a cone.
+
+    Parameters
+    ----------
+    dia_lg_end : float
+    apex_angle : float
+    location_from_lg_end : float
+
+    Returns
+    -------
+    float
+
+    Examples
+    --------
+    >>> radius_at_location(174, 60, 58)
+    53.51368438700171
+    """
+    return dia_lg_end / 2 - (math.tan(math.radians(apex_angle / 2)) * location_from_lg_end)
 
 
 def height(dia_lg_end: float, dia_sm_end: float, apex_angle: float) -> float:
     """Calculate the height of the frustum of the cone.
+    Parameters
+    ----------
+    dia_lg_end : float
+    dia_sm_end : float
+    apex_angle : float
 
-    example:
-        >>> height(228, 38, 60)
-        164.54482671904336
+    Returns
+    -------
+    float
+
+    Examples
+    --------
+    >>> height(228, 38, 60)
+    164.54482671904336
     """
     half_angle = math.radians(apex_angle / 2)
     annular_distance = abs((dia_lg_end - dia_sm_end) / 2)

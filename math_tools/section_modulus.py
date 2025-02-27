@@ -1,35 +1,31 @@
 from dataclasses import dataclass
 from math import pi
-from typing import Iterable, Optional
+from typing import Iterable
 
 
 @dataclass(slots=True, frozen=True)
 class Section:
-    centroid: tuple[Optional[tuple[float, float]], Optional[tuple[float, float]]] = (
+    centroid: tuple[tuple[float, float], tuple[float, float]] = (
         (0, 0),
         (0, 0),
     )
     area: float = 0
-    moment_of_inertia: tuple[Optional[float], Optional[float]] = (0, 0)
+    moment_of_inertia: tuple[float, float] = (0, 0)
 
     @property
-    def Ixx(self) -> Optional[float]:
+    def Ixx(self) -> float:
         return self.moment_of_inertia[0]
 
     @property
-    def Iyy(self) -> Optional[float]:
+    def Iyy(self) -> float:
         return self.moment_of_inertia[1]
 
     @property
-    def Sx(self) -> Optional[tuple[float, float]]:
-        if not self.Ixx or not self.centroid[1]:
-            return None
+    def Sx(self) -> tuple[float, float]:
         return self.Ixx / self.centroid[1][0], self.Ixx / self.centroid[1][1]
 
     @property
-    def Sy(self) -> Optional[tuple[float, float]]:
-        if not self.Iyy or not self.centroid[0]:
-            return None
+    def Sy(self) -> tuple[float, float]:
         return self.Iyy / self.centroid[0][0], self.Iyy / self.centroid[0][1]
 
     def __str__(self) -> str:
@@ -43,11 +39,22 @@ Sy: {self.Sy[0]:0.3f}\t{self.Sy[1]:0.3f}"""
 
 
 def bar(depth: float, thickness: float) -> Section:
-    """Calculate the properties of a bar.
+    """
+    Calculate the properties of a bar.
 
-    example:
-        >>> bar(2, 0.5)
-        Section(centroid=((0.25, 0.25), (1.0, 1.0)), area=1.0, moment_of_inertia=(0.3333333333333333, 0.020833333333333332))
+    Parameters
+    ----------
+    depth : float
+    thickness: float
+
+    Returns
+    -------
+    Section
+
+    Examples
+    --------
+    >>> bar(2, 0.5)
+    Section(centroid=((0.25, 0.25), (1.0, 1.0)), area=1.0, moment_of_inertia=(0.3333333333333333, 0.020833333333333332))
     """
     y = depth / 2
     x = thickness / 2
@@ -61,9 +68,21 @@ def bar(depth: float, thickness: float) -> Section:
     )
 
 
-def tbeam(
-    depth: float, web_thick: float, flg_width: float, flg_thick: float
-) -> Section:
+def tbeam(depth: float, web_thick: float, flg_width: float, flg_thick: float) -> Section:
+    """
+    Calculate the properties of a T beam.
+
+    Parameters
+    ----------
+    depth : float
+    web_thick : float
+    flg_width : float
+    flg_thick : float
+
+    Returns
+    -------
+    Section
+    """
     height = depth - web_thick
     area = flg_width * flg_thick + height * web_thick
     sum_b_d_squared = depth**2 * web_thick + flg_thick**2 * (flg_width - web_thick)
@@ -83,7 +102,47 @@ def tbeam(
     )
 
 
+def angle(long_leg: float, short_leg: float, thick: float) -> Section:
+    """
+    Calculate the properties of an angle.
+
+    Parameters
+    ----------
+    long_leg : float
+    short_leg : float
+    thick : float
+
+    Returns
+    -------
+    Section
+    """
+    area = (long_leg + short_leg - thick) * thick
+    i_xnaught = (thick / 3) * (short_leg * thick**2 + long_leg**3 - thick**3)
+    i_ynaught = (thick / 3) * (long_leg * thick**2 + short_leg**3 - thick**3)
+    x = (1 / area) * ((thick / 2) * (short_leg**2 + long_leg * thick - thick**2))
+    y = (1 / area) * ((thick / 2) * (long_leg**2 + short_leg * thick - thick**2))
+    Ixx = i_xnaught - area * y**2
+    Iyy = i_ynaught - area * x**2
+    return Section(
+        centroid=((x, short_leg - x), (y, long_leg - y)),
+        area=area,
+        moment_of_inertia=(Ixx, Iyy),
+    )
+
+
 def pipe(od: float, thickness: float) -> Section:
+    """
+    Calculate the properties of a pipe.
+
+    Parameters
+    ----------
+    od : float
+    thickness: float
+
+    Returns
+    -------
+    Section
+    """
     outer = circle(od / 2)
     inner = circle(od / 2 - thickness)
     return Section(
@@ -94,6 +153,17 @@ def pipe(od: float, thickness: float) -> Section:
 
 
 def circle(radius: float) -> Section:
+    """
+    Calculate the properties of a solid circle.
+
+    Parameters
+    ----------
+    radius : float
+
+    Returns
+    -------
+    Section
+    """
     return Section(
         centroid=((radius, radius), (radius, radius)),
         area=pi * radius**2,
@@ -104,6 +174,20 @@ def circle(radius: float) -> Section:
 def Ibeam_equalflange(
     depth: float, web_thick: float, flg_width: float, flg_thick: float
 ) -> Section:
+    """
+    Calculate the properties of a T beam.
+
+    Parameters
+    ----------
+    depth : float
+    web_thick : float
+    flg_width : float
+    flg_thick : float
+
+    Returns
+    -------
+    Section
+    """
     h = depth - web_thick
     y = depth / 2
     x = flg_width / 2
@@ -133,9 +217,9 @@ def parallel_axis(
     Ixx = Ide - area * d**2
     return (
         Section(
-            centroid=(None, (d, prev - d)),
+            centroid=((0, 0), (d, prev - d)),
             area=area,
-            moment_of_inertia=(Ixx, None),
+            moment_of_inertia=(Ixx, 0),
         ),
         Ide,
     )
