@@ -4,7 +4,7 @@
 $prevPwd = $PWD; Set-Location -ErrorAction Stop -LiteralPath $PSScriptRoot
 
 try {
- py -m src
+ py -m math_tools
 }
 finally {
   # Restore the previous location.
