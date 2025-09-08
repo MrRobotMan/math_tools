@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import StrEnum, auto
+from inspect import signature
 from typing import TYPE_CHECKING
 
 from . import cones, section_modulus
@@ -21,7 +22,7 @@ FUNCTIONS = {
         "angle": section_modulus.angle,
         "pipe": section_modulus.pipe,
         "circle": section_modulus.circle,
-        "ibeam_equalflange": section_modulus.Ibeam_equalflange,
+        "I beam equal flange": section_modulus.i_beam_equalflange,
     },
 }
 
@@ -48,7 +49,7 @@ def main() -> None:
 
 def menu[T: type[StrEnum]](choices: T, msg: str) -> T:
     print(msg)
-    options = [opt for opt in choices]
+    options = list(choices)
     for idx, opt in enumerate(options, start=1):
         print(f"{idx} {opt}")
     while True:
@@ -58,24 +59,25 @@ def menu[T: type[StrEnum]](choices: T, msg: str) -> T:
         print(f"Invalid choice {picked}, try again.")
 
 
-def is_valid_choice(selected: str, max: int) -> bool:
+def is_valid_choice(selected: str, max_limit: int) -> bool:
     try:
-        return 0 < int(selected) <= max
+        return 0 < int(selected) <= max_limit
     except ValueError:
         return False
 
 
 def execute[T](func: Callable[..., T]) -> T:
-    while True:
-        try:
-            args = [
-                float(v)
-                for v in input("Enter the arguements as a space separated list: ").split(" ")
-            ]
-        except ValueError:
-            print("Invalid input. Try again.")
-        else:
-            return func(*args)
+    params = signature(func).parameters
+    args = [get_param(k, v.annotation) for (k, v) in params.items()]
+    return func(*args)
+
+
+def get_param[T](param: str, param_type: Callable[[str], T]) -> T:
+    try:
+        return param_type(input(f"{param}: "))
+    except ValueError:
+        print("Invalid Input, try again.")
+        return get_param(param, param_type)
 
 
 class Mod(StrEnum):

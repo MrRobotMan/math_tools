@@ -1,23 +1,25 @@
 from __future__ import annotations
 
-import fractions
-import re
 from dataclasses import dataclass
+import fractions
 from functools import total_ordering
+import re
 
 
 @total_ordering
 @dataclass(slots=True)
 class USCustomary:
-    """Class to store a length in US Customary units
+    """
+    Class to store a length in US Customary units.
 
-    examples:
+    Examples:
         >>> USCustomary(12, 0)
         USCustomary(feet=12, inch=0)
         >>> USCustomary(inch=15)
         USCustomary(feet=1, inch=3)
         >>> USCustomary(4.5)
-        USCustomary(feet=4.0, inch=6.0)
+        USCustomary(feet=4, inch=6.0)
+
     """
 
     feet: int = 0
@@ -33,39 +35,43 @@ class USCustomary:
 
     @classmethod
     def from_str(cls, val: str) -> USCustomary:
-        """Convert a string representation to the class.
+        r"""
+        Convert a string representation to the class.
+
         String should be in the format of x'-y" or xft-yin
         Inches can be either x y/z" or x.xxx"
 
-        examples:
-            >>> USCustomary.from_str("12'-3 1/2\\"")
-            USCustomary(feet=12.0, inch=3.5)
+        Returns:
+            USCustomary
+
+        Raises:
+            ValueError: If the string format is invalid
+
+        Examples:
+            >>> USCustomary.from_str("12'-3 1/2\"")
+            USCustomary(feet=12, inch=3.5)
             >>> USCustomary.from_str('15"')
-            USCustomary(feet=1.0, inch=3.0)
+            USCustomary(feet=1, inch=3.0)
             >>> USCustomary.from_str('12.375"')
-            USCustomary(feet=1.0, inch=0.375)
+            USCustomary(feet=1, inch=0.375)
             >>> USCustomary.from_str("12ft3 1/2in")
-            USCustomary(feet=12.0, inch=3.5)
-            >>> USCustomary.from_str('15in')
-            USCustomary(feet=1.0, inch=3.0)
-            >>> USCustomary.from_str('12.375in')
-            USCustomary(feet=1.0, inch=0.375)
+            USCustomary(feet=12, inch=3.5)
+            >>> USCustomary.from_str("15in")
+            USCustomary(feet=1, inch=3.0)
+            >>> USCustomary.from_str("12.375in")
+            USCustomary(feet=1, inch=0.375)
+
         """
         match_sym = re.search(r"""(?P<feet>.*')?-?(?P<inches>.*")""", val)
         match_chr = re.search(r"(?P<feet>.*ft)?-?(?P<inches>.*in)", val)
         match = match_sym or match_chr
         if not match:
-            raise ValueError(f"Could not form USCustomary from {val}")
+            msg = f"Could not form USCustomary from {val}"
+            raise ValueError(msg)
         feet = match.group("feet")
-        if feet:
-            feet = int(feet.replace("'", "").replace("ft", ""))
-        else:
-            feet = 0
+        feet = int(feet.replace("'", "").replace("ft", "")) if feet else 0
         inches = match.group("inches")
-        if inches:
-            inches = inches.replace('"', "").replace("in", "")
-        else:
-            inches = "0"
+        inches = inches.replace('"', "").replace("in", "") if inches else "0"
         inches, *fraction = inches.split()
         inches = float(inches)
         if fraction:
@@ -75,31 +81,37 @@ class USCustomary:
 
     @property
     def as_metric(self) -> Metric:
-        """Convert to Metric
+        """
+        Convert to Metric.
 
-        example:
+        Example:
             >>> USCustomary(12, 0).as_metric
             Metric(millimeters=3657.6)
+
         """
         return Metric(self.as_inches * 25.4)
 
     @property
     def as_feet(self) -> float:
-        """Convert to feet only.
+        """
+        Convert to feet only.
 
-        example:
+        Example:
             >>> USCustomary(8, 9).as_feet
             8.75
+
         """
         return self.feet + self.inch / 12
 
     @property
     def as_inches(self) -> float:
-        """Convert to inches only
+        """
+        Convert to inches only.
 
-        example:
+        Example:
             >>> USCustomary(12, 3.5).as_inches
             147.5
+
         """
         return self.feet * 12 + self.inch
 
@@ -145,26 +157,33 @@ class USCustomary:
             raise NotImplementedError
         return self.as_inches > other.as_inches
 
+    def __hash__(self) -> int:
+        return hash((self.feet, self.inch))
+
 
 @total_ordering
 @dataclass(slots=True)
 class Metric:
-    """Class to store a length in Metric units
+    """
+    Class to store a length in Metric units.
 
-    examples:
+    Examples:
         >>> Metric(3000)
         Metric(millimeters=3000)
+
     """
 
     millimeters: float = 0
 
     @property
     def as_us_customary(self) -> USCustomary:
-        """Convert to US Customary
+        """
+        Convert to US Customary.
 
-        example:
+        Example:
             >>> Metric(3000).as_us_customary
-            USCustomary(feet=9.0, inch=10.110236220472444)
+            USCustomary(feet=9, inch=10.110236220472444)
+
         """
         return USCustomary(inch=self.millimeters / 25.4)
 
@@ -209,6 +228,9 @@ class Metric:
         if not isinstance(other, Metric):
             raise NotImplementedError
         return self.millimeters > other.millimeters
+
+    def __hash__(self) -> int:
+        return hash(self.millimeters)
 
 
 if __name__ == "__main__":

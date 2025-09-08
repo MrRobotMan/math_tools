@@ -10,16 +10,22 @@ def distance(
     cone_half_angle: float,
 ) -> float:
     """
-    Find the shortest path between two points on a cone
+    Find the shortest path between two points on a cone.
 
     Parameters
     ----------
-    height_point_1 : float,
-    angle_point_1 : float,
-    height_point_2 : float,
-    angle_point_2 : float,
-    cone_large_end_diameter : float,
-    cone_half_angle : float,
+    height_point_1 : float
+        Height along the cone axis to the first point
+    angle_point_1 : float
+        Angle around the axis to the first point
+    height_point_2 : float
+        Height along the cone axis to the second point
+    angle_point_2 : float
+        Angle around the axis to the second point
+    cone_large_end_diameter : float
+        Diameter of the cone large end
+    cone_half_angle : float
+        Cone half angle
 
     Returns
     -------
@@ -29,6 +35,7 @@ def distance(
     --------
     >>> distance(60, 15, 20, 7, 127, 30)
     46.503239630149544
+
     """
     # Convert all angles to radians
     cone_half_angle = math.radians(cone_half_angle)
@@ -57,13 +64,16 @@ def distance(
 
 def angle(dia_lg_end: float, dia_sm_end: float, length: float) -> float:
     """
-    Calculate the cone half-angle
+    Calculate the cone half-angle.
 
     Parameters
     ----------
     dia_lg_end : float
+        Diameter of the large end
     dia_sm_end : float
+        Diameter of the small end
     length : float
+        Axial length
 
     Returns
     -------
@@ -73,20 +83,26 @@ def angle(dia_lg_end: float, dia_sm_end: float, length: float) -> float:
     --------
     >>> angle(30, 20, 8.66)
     30.000727780827372
+
     """
     delta = (dia_lg_end - dia_sm_end) / 2
     return math.degrees(math.atan(delta / length))
 
 
-def radius_at_location(dia_lg_end: float, apex_angle: float, location_from_lg_end: float) -> float:
+def radius_at_location(
+    dia_lg_end: float, half_apex_angle: float, location_from_lg_end: float
+) -> float:
     """
     Calculate the radius at a location on a cone.
 
     Parameters
     ----------
     dia_lg_end : float
-    apex_angle : float
+        Diameter of the large end
+    half_apex_angle : float
+        Half apex angle
     location_from_lg_end : float
+        Axial distance from the large end
 
     Returns
     -------
@@ -94,19 +110,25 @@ def radius_at_location(dia_lg_end: float, apex_angle: float, location_from_lg_en
 
     Examples
     --------
-    >>> radius_at_location(174, 60, 58)
+    >>> radius_at_location(174, 30, 58)
     53.51368438700171
+
     """
-    return dia_lg_end / 2 - (math.tan(math.radians(apex_angle / 2)) * location_from_lg_end)
+    return dia_lg_end / 2 - (math.tan(math.radians(half_apex_angle)) * location_from_lg_end)
 
 
-def height(dia_lg_end: float, dia_sm_end: float, apex_angle: float) -> float:
-    """Calculate the height of the frustum of the cone.
+def height(dia_lg_end: float, dia_sm_end: float, half_apex_angle: float) -> float:
+    """
+    Calculate the height of the frustum of the cone.
+
     Parameters
     ----------
     dia_lg_end : float
+        Diameter of the large end
     dia_sm_end : float
-    apex_angle : float
+        Diameter of the small end
+    half_apex_angle : float
+        Half apex angle
 
     Returns
     -------
@@ -116,10 +138,10 @@ def height(dia_lg_end: float, dia_sm_end: float, apex_angle: float) -> float:
     --------
     >>> height(228, 38, 60)
     164.54482671904336
+
     """
-    half_angle = math.radians(apex_angle / 2)
     annular_distance = abs((dia_lg_end - dia_sm_end) / 2)
-    return annular_distance / math.tan(half_angle)
+    return annular_distance / math.tan(math.radians(half_apex_angle))
 
 
 if __name__ == "__main__":
