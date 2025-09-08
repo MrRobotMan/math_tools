@@ -1,6 +1,0 @@
-__init__
-__main__
-cones
-lengths
-section_modulus
-srss
