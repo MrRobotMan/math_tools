@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from enum import StrEnum, auto
-from typing import Type
+from typing import TYPE_CHECKING
 
 from . import cones, section_modulus
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 FUNCTIONS = {
     "cones": {
@@ -24,11 +26,11 @@ FUNCTIONS = {
 }
 
 
-def main():
+def main() -> None:
     print("Welcome to math tools")
     print("=====================")
     while True:
-        modules = {"cones": Cones, "section_modulus": Section_Modulus, "back": Mod}
+        modules = {"cones": Cones, "section_modulus": SectionModulus, "back": Mod}
         choice = str(menu(Mod, "Welcome to mathtools. Select an option:"))
         if choice == "quit":
             break
@@ -44,7 +46,7 @@ def main():
             print(f"\n{res}\n")
 
 
-def menu[T: Type[StrEnum]](choices: T, msg: str) -> T:
+def menu[T: type[StrEnum]](choices: T, msg: str) -> T:
     print(msg)
     options = [opt for opt in choices]
     for idx, opt in enumerate(options, start=1):
@@ -53,8 +55,7 @@ def menu[T: Type[StrEnum]](choices: T, msg: str) -> T:
         if is_valid_choice(picked := input(), len(choices)):
             print()
             return options[int(picked) - 1]
-        else:
-            print(f"Invalid choice {picked}, try again.")
+        print(f"Invalid choice {picked}, try again.")
 
 
 def is_valid_choice(selected: str, max: int) -> bool:
@@ -69,9 +70,7 @@ def execute[T](func: Callable[..., T]) -> T:
         try:
             args = [
                 float(v)
-                for v in input(
-                    "Enter the arguements as a space separated list: "
-                ).split(" ")
+                for v in input("Enter the arguements as a space separated list: ").split(" ")
             ]
         except ValueError:
             print("Invalid input. Try again.")
@@ -94,7 +93,7 @@ class Cones(StrEnum):
     QUIT = auto()
 
 
-class Section_Modulus(StrEnum):
+class SectionModulus(StrEnum):
     BAR = auto()
     TBEAM = auto()
     ANGLE = auto()
