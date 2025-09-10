@@ -27,23 +27,11 @@ def gcd(a: int, b: int) -> int:
     """
     a = abs(a)
     b = abs(b)
-    if min(a, b) == 0:
-        return max(a, b)
-    d = 0
-    while a % 2 == 0 and b % 2 == 0:
-        d += 1
-        a >>= 1
-        b >>= 1
-    a = make_odd(a)
-    b = make_odd(b)
-    while a != b:
-        if a > b:
-            a -= b
-            a = make_odd(a)
-        else:
-            b -= a
-            b = make_odd(b)
-    return (1 << d) * a
+    if b > a:
+        (a, b) = (b, a)
+    if b == 0:
+        return a
+    return gcd(b, a % b)
 
 
 def lcm(a: int, b: int) -> int:
@@ -71,40 +59,6 @@ def lcm(a: int, b: int) -> int:
 
     """
     return a * b // gcd(a, b)
-
-
-def make_odd(num: int) -> int:
-    """
-    Divide by two until a number is odd.
-
-    Parameters
-    ----------
-    num: int
-        Number to make even
-
-    Returns
-    -------
-    int
-
-    Raises
-    ------
-    ZeroDivisionError
-        If num is 0 can't make odd.
-
-    Examples
-    --------
-    >>> make_odd(136)
-    17
-    >>> make_odd(16)
-    1
-
-    """
-    if num == 0:
-        raise ZeroDivisionError
-
-    while num % 2 == 0:
-        num >>= 1
-    return num
 
 
 if __name__ == "__main__":
