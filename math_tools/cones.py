@@ -29,7 +29,7 @@ def distance(
 
     Returns
     -------
-    floast
+    float
 
     Examples
     --------
