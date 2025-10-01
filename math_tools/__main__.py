@@ -4,7 +4,7 @@ from enum import StrEnum, auto
 from inspect import signature
 from typing import TYPE_CHECKING
 
-from . import cones, section_modulus
+from math_tools import cones, section_modulus
 
 if TYPE_CHECKING:
     from collections.abc import Callable
