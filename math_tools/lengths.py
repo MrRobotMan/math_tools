@@ -115,6 +115,14 @@ class USCustomary:
         """
         return self.feet * 12 + self.inch
 
+    @property
+    def _inches(self) -> str:
+        whole = int(self.inch)
+        part = fractions.Fraction(self.inch - whole)
+        if part == 0:
+            return str(whole)
+        return f"{whole} {part}"
+
     def __add__(self, other: object) -> USCustomary:
         if isinstance(other, Metric):
             other = other.as_us_customary
@@ -159,6 +167,11 @@ class USCustomary:
 
     def __hash__(self) -> int:
         return hash((self.feet, self.inch))
+
+    def __str__(self) -> str:
+        if self.feet == 0:
+            return f'{self._inches}"'
+        return f"{self.feet}'-{self._inches}\""
 
 
 @total_ordering
@@ -231,6 +244,9 @@ class Metric:
 
     def __hash__(self) -> int:
         return hash(self.millimeters)
+
+    def __str__(self) -> str:
+        return f"{self.millimeters}mm"
 
 
 if __name__ == "__main__":

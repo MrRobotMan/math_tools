@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "windows-curses>=2.4.1",
+    "windows-curses>=2.4.1 ; sys_platform == 'windows'",
 ]
+
+[project.scripts]
+mathtools = "math_tools:cli"
 

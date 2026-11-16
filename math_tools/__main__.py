@@ -101,7 +101,7 @@ class SectionModulus(StrEnum):
     ANGLE = auto()
     PIPE = auto()
     CIRCLE = auto()
-    IBEAM_EQUALFLANGE = auto()
+    IBEAM_EQUALFLANGE = "I beam equal flange"
     BACK = auto()
     QUIT = auto()
 
